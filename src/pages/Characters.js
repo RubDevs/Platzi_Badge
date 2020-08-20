@@ -1,46 +1,47 @@
 import React from "react";
 import logo from "../images/platziconf-logo.svg";
 import "../components/styles/Badges.css";
+import CharactersList from "../components/CharactersList";
 import "../components/styles/BadgesList.css";
-import BadgesList from "../components/BadgesList";
-import { Link } from "react-router-dom";
-import api from "../api";
 import Skeleton from "react-loading-skeleton";
-import PageError from "../components/PageError";
 
-class Badges extends React.Component {
+class Characters extends React.Component {
   state = {
+    nextPage: 1,
     loading: true,
     error: null,
-    data: undefined,
+    data: {
+      results: [],
+    },
   };
-
   componentDidMount() {
-    this.fetchData();
-
-    this.intervalId = setInterval(this.fetchData, 5000);
+    this.fetchCharacters();
   }
 
-  componentWillUnmount() {
-    clearInterval(this.intervalId);
-  }
-
-  fetchData = async () => {
+  fetchCharacters = async () => {
     this.setState({ loading: true, error: null });
-
     try {
-      const data = await api.badges.list();
-      this.setState({ loading: false, data: data });
+      const response = await fetch(
+        `https://rickandmortyapi.com/api/character?page=${this.state.nextPage}`
+      );
+      const data = await response.json();
+
+      this.setState({
+        data: {
+          info: data.info,
+          results: [].concat(this.state.data.results, data.results),
+        },
+        loading: false,
+        nextPage: this.state.nextPage + 1,
+      });
     } catch (error) {
-      this.setState({ loading: false, error: error });
-      console.log(`Error: ${error.message}`);
+      this.setState({
+        error,
+        loading: false,
+      });
     }
   };
-
   render() {
-    if (this.state.error) {
-      return <PageError error={this.state.error} />;
-    }
     return (
       <React.Fragment>
         <div className="Badges">
@@ -51,26 +52,26 @@ class Badges extends React.Component {
           </div>
         </div>
         <div className="Badge__container">
-          <div className="Badges__buttons">
-            <Link to="/badge/new" className="btn btn-primary">
-              New Badge
-            </Link>
-          </div>
           <div className="Badges__list">
             <div className="Badges__container">
               <div className="BadgesList">
                 <ul className="list-unstyled">
-                  {this.state.loading && !this.state.data ? (
+                  {this.state.loading ? (
                     new Array(10).fill(1).map((_, i) => {
                       return <Skeleton key={i} />;
                     })
                   ) : (
-                    <React.Fragment>
-                      <BadgesList badges={this.state.data} />
-                      {this.state.loading && <Skeleton />}
-                    </React.Fragment>
+                    <CharactersList characters={this.state.data} />
                   )}
                 </ul>
+                {!this.state.loading && (
+                  <button
+                    onClick={() => this.fetchCharacters()}
+                    className="btn btn-primary"
+                  >
+                    Cargar mas
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -80,4 +81,4 @@ class Badges extends React.Component {
   }
 }
 
-export default Badges;
+export default Characters;

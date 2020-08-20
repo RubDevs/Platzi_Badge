@@ -1,22 +1,25 @@
 import React from "react";
-import Skeleton from "react-loading-skeleton";
 import "./styles/BadgesList.css";
+import { Link } from "react-router-dom";
+import Gravatar from "./Gravatar";
 
 class BadgesListItem extends React.Component {
   render() {
     return (
       <div className="BadgesListItem">
-        <img
+        <Gravatar
           className="BadgesListItem__avatar"
-          src={this.props.badge.image}
-          alt={`${this.props.badge.name} ${this.props.badge.species}`}
+          email={this.props.badge.email}
+          alt={`${this.props.badge.firstName} ${this.props.badge.lastName}`}
         />
 
         <div>
-          <strong>{this.props.badge.name}</strong>
-          <br />@{this.props.badge.name}
+          <strong>
+            {this.props.badge.firstName} {this.props.badge.lastName}
+          </strong>
+          <br />@{this.props.badge.twitter}
           <br />
-          {this.props.badge.species}
+          {this.props.badge.jobTitle}
         </div>
       </div>
     );
@@ -24,66 +27,32 @@ class BadgesListItem extends React.Component {
 }
 
 class BadgesList extends React.Component {
-  state = {
-    nextPage: 1,
-    loading: true,
-    error: null,
-    data: {
-      results: [],
-    },
-  };
-  componentDidMount() {
-    this.fetchCharacters();
-  }
-
-  fetchCharacters = async () => {
-    this.setState({ loading: true, error: null });
-    try {
-      const response = await fetch(
-        `https://rickandmortyapi.com/api/character?page=${this.state.nextPage}`
-      );
-      const data = await response.json();
-
-      this.setState({
-        data: {
-          info: data.info,
-          results: [].concat(this.state.data.results, data.results),
-        },
-        loading: false,
-        nextPage: this.state.nextPage + 1,
-      });
-    } catch (error) {
-      this.setState({
-        error,
-        loading: false,
-      });
-    }
-  };
   render() {
-    if (this.state.error) {
-      return `Error: ${this.state.error.message}`;
+    if (this.props.badges.length === 0) {
+      return (
+        <div>
+          <h3>No badges were found</h3>
+          <Link className="btn btn-primary" to="/badges/new">
+            Create new badge
+          </Link>
+        </div>
+      );
     }
     return (
-      <div className="BadgesList">
-        <ul className="list-unstyled">
-          {this.state.data.results.map((badge) => {
-            return (
-              <li key={badge.id}>
+      <React.Fragment>
+        {this.props.badges.map((badge) => {
+          return (
+            <li key={badge.id}>
+              <Link
+                className="text-reset text-decoration-none"
+                to={`/badge/${badge.id}/edit`}
+              >
                 <BadgesListItem badge={badge} />
-              </li>
-            );
-          })}
-        </ul>
-        {this.state.loading && <Skeleton />}
-        {!this.state.loading && (
-          <button
-            onClick={() => this.fetchCharacters()}
-            className="btn btn-primary"
-          >
-            Cargar mas
-          </button>
-        )}
-      </div>
+              </Link>
+            </li>
+          );
+        })}
+      </React.Fragment>
     );
   }
 }
