@@ -10,7 +10,7 @@ class BadgesListItem extends React.Component {
         <Gravatar
           className="BadgesListItem__avatar"
           email={this.props.badge.email}
-          alt={`${this.props.badge.firstName} ${this.props.badge.lastName}`}
+          //alt={`${this.props.badge.firstName} ${this.props.badge.lastName}`}
         />
 
         <div>
@@ -26,35 +26,34 @@ class BadgesListItem extends React.Component {
   }
 }
 
-class BadgesList extends React.Component {
-  render() {
-    if (this.props.badges.length === 0) {
-      return (
-        <div>
-          <h3>No badges were found</h3>
-          <Link className="btn btn-primary" to="/badges/new">
-            Create new badge
-          </Link>
-        </div>
-      );
-    }
+function BadgesList(props) {
+  const badges = props.badges;
+  if (badges.length === 0) {
     return (
-      <React.Fragment>
-        {this.props.badges.map((badge) => {
-          return (
-            <li key={badge.id}>
-              <Link
-                className="text-reset text-decoration-none"
-                to={`/badge/${badge.id}/edit`}
-              >
-                <BadgesListItem badge={badge} />
-              </Link>
-            </li>
-          );
-        })}
-      </React.Fragment>
+      <div>
+        <h3>No badges were found</h3>
+        <Link className="btn btn-primary" to="/badges/new">
+          Create new badge
+        </Link>
+      </div>
     );
   }
+  return (
+    <React.Fragment>
+      {badges.map((badge) => {
+        return (
+          <li key={badge.id}>
+            <Link
+              className="text-reset text-decoration-none"
+              to={`/badge/${badge.id}/`}
+            >
+              <BadgesListItem badge={badge} />
+            </Link>
+          </li>
+        );
+      })}
+    </React.Fragment>
+  );
 }
 
 export default BadgesList;

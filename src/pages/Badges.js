@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "../images/platziconf-logo.svg";
+import confLogo from "../images/badge-header.svg";
 import "../components/styles/Badges.css";
 import "../components/styles/BadgesList.css";
 import BadgesList from "../components/BadgesList";
@@ -46,11 +46,16 @@ class Badges extends React.Component {
         <div className="Badges">
           <div className="Badges__hero">
             <div className="Badges__container">
-              <img src={logo} alt="logo"></img>
+              <img
+                className="Badges_conf-logo"
+                src={confLogo}
+                alt="conf logo"
+              />
             </div>
           </div>
         </div>
-        <div className="Badge__container">
+
+        <div className="Badges__container">
           <div className="Badges__buttons">
             <Link to="/badge/new" className="btn btn-primary">
               New Badge

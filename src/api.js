@@ -36,6 +36,7 @@ const api = {
       });
     },
     read(badgeId) {
+      console.log(callApi(`/badges/${badgeId}`));
       return callApi(`/badges/${badgeId}`);
     },
     update(badgeId, updates) {
